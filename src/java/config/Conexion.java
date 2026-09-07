@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class Conexion {
     // Datos de conexión a tu base de datos de XAMPP
-    private static final String URL = "jdbc:mysql://localhost:3306/portafolio_rpg?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private static final String URL = "mysql://root:fTbofCzCfSoHdHqVfZhHtcnUyycPXHtd@mysql.railway.internal:3306/railway";
     private static final String USER = "root";
-    private static final String PASSWORD = ""; // Por defecto en XAMPP viene vacío
+    private static final String PASSWORD = "fTbofCzCfSoHdHqVfZhHtcnUyycPXHtd"; // Por defecto en XAMPP viene vacío
 
     public static Connection getConexion() {
         Connection con = null;
