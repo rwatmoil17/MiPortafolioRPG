@@ -1,14 +1,29 @@
-# 1. Usamos una imagen oficial de Tomcat que tenga Java 21 o compatible
+# === ETAPA 1: COMPILACIÓN DEL PROYECTO JAVA ===
+FROM alpine/git AS clone
+WORKDIR /app
+
+# Usamos una imagen oficial de Java con Ant para compilar proyectos tradicionales de NetBeans
+FROM frekele/ant:1.10.3-jdk8 AS build
+WORKDIR /app
+
+# Copiamos todo el código fuente que ya tienes subido en GitHub
+COPY . .
+
+# Compilamos los archivos Java (.java a .class) usando el motor Ant de NetBeans
+RUN ant compile
+
+# === ETAPA 2: SERVIDOR TOMCAT EN PRODUCCIÓN ===
 FROM tomcat:10-jdk21-openjdk
+WORKDIR /usr/local/tomcat
 
-# 2. Borramos los archivos por defecto que trae Tomcat para que no estorben
-RUN rm -rf /usr/local/tomcat/webapps/ROOT
+# Limpiamos los archivos por defecto de Tomcat
+RUN rm -rf webapps/ROOT
 
-# 3. Copiamos tu carpeta 'web' (donde están tus JSPs, CSS y sonidos) directo al inicio del servidor
-COPY web/ /usr/local/tomcat/webapps/ROOT/
+# Copiamos la carpeta web (JSPs, CSS, sonidos)
+COPY web/ webapps/ROOT/
 
-# 4. Copiamos tus clases compuestas de Java (servlets) si las metes en la estructura correcta, 
-# pero para asegurar tus JSPs y diseño con sonidos, esto levantará la interfaz de inmediato.
+# Copiamos las clases compiladas automáticamente en la etapa anterior a la ruta exacta que Tomcat necesita
+COPY --from=build /app/build/web/WEB-INF/classes/ /usr/local/tomcat/webapps/ROOT/WEB-INF/classes/
+
 EXPOSE 8080
-
 CMD ["catalina.sh", "run"]
